@@ -93,18 +93,18 @@ exports.notice = (comment) => {
 
   // 微信提醒
   const scContent =
-    "#### 评论内容" +
-    "\r\n > " +
-    comment.get("comment") +
-    "\r\n" +
-    "原文地址 👉 " +
-    process.env.SITE_URL +
-    comment.get("url") +
-    "\r\n #### 评论人\r\n" +
-    comment.get("nick") +
-    "(" +
-    comment.get("mail") +
-    ")";
+      `@face=193@ 叮！「${process.env.SITE_NAME}」上有人回复了你啦！@face=193@
+      ${
+          $(text
+              .replace(/<img.*?src="(.*?)".*?>/g, "\n@image=$1@\n")
+              .replace(/<br>/g, "")
+          ).text()
+              .replace(/\n+/g, "\n")
+              .replace(/\n+$/g, "")
+      }
+      @face=219@ 原文地址: ${url}
+      @face=219@ 评论人: ${name + "(" + comment.get("mail") + ")"}
+      `;
   if (process.env.SCKEY != null) {
     axios({
       method: "post",
@@ -147,21 +147,7 @@ exports.notice = (comment) => {
     if (process.env.QQ != null) {
       qq = "&qq=" + process.env.QQ;
     }
-    const scContent = `[CQ:face,id=119]您的 ${
-      process.env.SITE_NAME
-    } 上有新评论了！
-[CQ:face,id=183]${name} 发表评论：
-[CQ:face,id=77][CQ:face,id=77][CQ:face,id=77][CQ:face,id=77][CQ:face,id=77]
-${$(
-  text
-    .replace(/  <img.*?src="(.*?)".*?>/g, "\n[图片]$1\n")
-    .replace(/<br>/g, "\n")
-)
-  .text()
-  .replace(/\n+/g, "\n")
-  .replace(/\n+$/g, "")}
-[CQ:face,id=76][CQ:face,id=76][CQ:face,id=76][CQ:face,id=76][CQ:face,id=76]
-[CQ:face,id=169]${url + "#" + comment.get("objectId")}`;
+
     axios
       .get(
         `https://qmsg.zendee.cn:443/send/${
@@ -181,6 +167,9 @@ ${$(
 
 // 发送邮件通知他人
 exports.send = (currentComment, parentComment) => {
+  if (process.env.DISABLE_EMAIL) {
+    return;
+  }
   // 站长被 @ 不需要提醒
   if (
     parentComment.get("mail") === process.env.TO_EMAIL ||
