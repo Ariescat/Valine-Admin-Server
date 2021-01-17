@@ -93,18 +93,17 @@ exports.notice = (comment) => {
 
   // 微信提醒
   const scContent =
-      `@face=193@ 叮！「${process.env.SITE_NAME}」上有人回复了你啦！@face=193@\n
+`@face=193@ 叮！「${process.env.SITE_NAME}」上有人回复了你啦：\n
       ${
           $(text
-              .replace(/<img.*?src="(.*?)".*?>/g, "\n@image=$1@\n")
+              .replace(/<img.*?src="(.*?)".*?>/g, "\n[图片]$1\n")
               .replace(/<br>/g, "")
           ).text()
               .replace(/\n+/g, "")
               .replace(/\n+$/g, "")
       }\n
-      @face=219@ 原文地址: ${url}
-      @face=219@ 评论人: ${name + "(" + comment.get("mail") + ")"}
-      `;
+@face=219@ 原文地址：${url}
+@face=219@ 评论人：${name + "(" + comment.get("mail") + ")"}`;
   if (process.env.SCKEY != null) {
     axios({
       method: "post",
