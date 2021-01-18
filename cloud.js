@@ -16,6 +16,9 @@ function sendNotification(currentComment, defaultIp) {
 
   // AT评论通知
   const rid = currentComment.get("pid") || currentComment.get("rid");
+  console.log("pid: %s", currentComment.get("pid"));
+  console.log("rid: %s", currentComment.get("rid"));
+  console.log("rid2: %s", rid);
 
   if (!rid) {
     console.log("这条评论没有 @ 任何人");
