@@ -5,10 +5,6 @@ const axios = require("axios");
 const spam = require("./utilities/check-spam");
 
 function sendNotification(currentComment, defaultIp) {
-  // 发送博主通知邮件
-  if (currentComment.get("mail") !== process.env.TO_EMAIL) {
-    mail.notice(currentComment);
-  }
 
   const ip = currentComment.get("ip") || defaultIp;
   console.log("IP: %s", ip);
@@ -16,11 +12,12 @@ function sendNotification(currentComment, defaultIp) {
 
   // AT评论通知
   const rid = currentComment.get("pid") || currentComment.get("rid");
-  console.log("pid: %s", currentComment.get("pid"));
-  console.log("rid: %s", currentComment.get("rid"));
-  console.log("rid2: %s", rid);
 
   if (!rid) {
+    // 发送博主通知邮件
+    if (currentComment.get("mail") !== process.env.TO_EMAIL) {
+      mail.notice(currentComment, undefined);
+    }
     console.log("这条评论没有 @ 任何人");
     return;
   } else if (currentComment.get("isSpam")) {
@@ -31,6 +28,10 @@ function sendNotification(currentComment, defaultIp) {
   const query = new AV.Query("Comment");
   query.get(rid).then(
     function (parentComment) {
+      // 发送博主通知邮件
+      if (currentComment.get("mail") !== process.env.TO_EMAIL) {
+        mail.notice(currentComment, parentComment);
+      }
       if (
         parentComment.get("mail") &&
         parentComment.get("mail") !== process.env.TO_EMAIL

@@ -39,7 +39,7 @@ const sendTemplate = ejs.compile(
 );
 
 // 提醒站长
-exports.notice = (comment) => {
+exports.notice = (comment, parentComment) => {
   // 站长自己发的评论不需要通知
   if (
     comment.get("mail") === process.env.TO_EMAIL ||
@@ -92,18 +92,46 @@ exports.notice = (comment) => {
   }
 
   // 微信提醒
-  const scContent =
-`@face=193@ 叮！「${process.env.SITE_NAME}」上有人回复了你啦：\n
+  let scContent;
+  if (parentComment) {
+    let pName = parentComment.get("nick");
+    let pText = parentComment.get("comment");
+    let pMail = parentComment.get("mail");
+    scContent =
+`@face=193@ 叮！「${process.env.SITE_NAME}」上 ${pName + "(" + pMail + ")"} 的评论：
       ${
-          $(text
+          $(pText
               .replace(/<img.*?src="(.*?)".*?>/g, "\n[图片]$1\n")
               .replace(/<br>/g, "")
           ).text()
               .replace(/\n+/g, "")
               .replace(/\n+$/g, "")
       }\n
+有人回复了：\n
+      ${
+            $(text
+                .replace(/<img.*?src="(.*?)".*?>/g, "\n[图片]$1\n")
+                .replace(/<br>/g, "")
+            ).text()
+                .replace(/\n+/g, "")
+                .replace(/\n+$/g, "")
+        }\n
 @face=219@ 原文地址：${url}
 @face=219@ 评论人：${name + "(" + comment.get("mail") + ")"}`;
+  } else {
+    scContent =
+        `@face=193@ 叮！「${process.env.SITE_NAME}」上有人回复了你啦：\n
+      ${
+            $(text
+                .replace(/<img.*?src="(.*?)".*?>/g, "\n[图片]$1\n")
+                .replace(/<br>/g, "")
+            ).text()
+                .replace(/\n+/g, "")
+                .replace(/\n+$/g, "")
+        }\n
+@face=219@ 原文地址：${url}
+@face=219@ 评论人：${name + "(" + comment.get("mail") + ")"}`;
+  }
   if (process.env.SCKEY != null) {
     axios({
       method: "post",
