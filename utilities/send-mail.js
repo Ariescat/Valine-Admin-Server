@@ -117,7 +117,7 @@ exports.notice = (comment, parentComment) => {
               .replace(/\n+/g, "")
               .replace(/\n+$/g, "")
       }\n
-有人回复了：\n
+${name + "(" + comment.get("mail") + ")"} 回复了：\n
       ${
             $(text
                 .replace(/<img.*?src="(.*?)".*?>/g, "\n[图片]$1\n")
@@ -126,8 +126,7 @@ exports.notice = (comment, parentComment) => {
                 .replace(/\n+/g, "")
                 .replace(/\n+$/g, "")
         }\n
-@face=219@ 原文地址：${url}
-@face=219@ 评论人：${name + "(" + comment.get("mail") + ")"}`;
+@face=219@ 原文地址：${url}`;
   } else {
     scContent =
         `@face=193@ 叮！「${process.env.SITE_NAME}」上有人回复了你啦：\n
