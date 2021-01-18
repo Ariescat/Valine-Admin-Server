@@ -8,7 +8,7 @@ const $ = require("cheerio");
 
 const config = {
   auth: {
-    user: process.env.SMTP_USER,
+    user: process.env.SMTP_ACCOUNT,
     pass: process.env.SMTP_PASS,
   },
 };
@@ -37,6 +37,16 @@ const sendTemplate = ejs.compile(
     "utf8"
   )
 );
+// 该方法验证 SMTP 是否配置正确
+console.log('SMTP邮箱校验开始 user:%s,pass:%s', config.auth.user, config.auth.pass);
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log('SMTP邮箱配置异常：', error);
+  }
+  if (success) {
+    console.log("SMTP邮箱配置正常！");
+  }
+});
 
 // 提醒站长
 exports.notice = (comment, parentComment) => {
@@ -245,16 +255,5 @@ exports.send = (currentComment, parentComment) => {
         parentComment.get("nick") +
         ", 已通知."
     );
-  });
-};
-
-// 该方法可验证 SMTP 是否配置正确
-exports.verify = function () {
-  console.log("....");
-  transporter.verify(function (error, success) {
-    if (error) {
-      console.error(error.message);
-    }
-    console.log("Server is ready to take our messages");
   });
 };
