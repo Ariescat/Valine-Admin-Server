@@ -204,9 +204,6 @@ exports.notice = (comment, parentComment) => {
 
 // 发送邮件通知他人
 exports.send = (currentComment, parentComment) => {
-  if (process.env.DISABLE_EMAIL) {
-    return;
-  }
   // 站长被 @ 不需要提醒
   if (
     parentComment.get("mail") === process.env.TO_EMAIL ||
