@@ -192,8 +192,11 @@ exports.notice = (comment, parentComment) => {
         }?msg=${encodeURIComponent(scContent)}` + qq
       )
       .then(function (response) {
-        if (response.status === 200 && response.data.success === true)
+        if (response.status === 200 && response.data.success === true) {
+          comment.set("isNotified", true);
+          comment.save();
           console.log("已QQ提醒站长");
+        }
         else console.warn("QQ提醒失败:", response.data);
       })
       .catch(function (error) {
