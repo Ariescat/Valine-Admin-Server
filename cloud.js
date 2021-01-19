@@ -7,12 +7,12 @@ const spam = require("./utilities/check-spam");
 function sendNotification(currentComment, defaultIp) {
 
   const ip = currentComment.get("ip") || defaultIp;
-  console.log("IP: %s", ip);
+  console.log("接收到了新的评论，IP: %s", ip);
+
   spam.checkSpam(currentComment, ip);
 
   // AT评论通知
   const rid = currentComment.get("pid") || currentComment.get("rid");
-
   if (!rid) {
     // 发送博主通知邮件
     if (currentComment.get("mail") !== process.env.TO_EMAIL) {
